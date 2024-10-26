@@ -32,7 +32,7 @@ CREATE TABLE `cantidadtipo` (
   KEY `idSolicitud` (`idSolicitud`),
   CONSTRAINT `cantidadtipo_ibfk_1` FOREIGN KEY (`idTipo`) REFERENCES `tiporaee` (`idTipo`),
   CONSTRAINT `cantidadtipo_ibfk_2` FOREIGN KEY (`idSolicitud`) REFERENCES `solicitudes` (`idSolicitud`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +41,7 @@ CREATE TABLE `cantidadtipo` (
 
 LOCK TABLES `cantidadtipo` WRITE;
 /*!40000 ALTER TABLE `cantidadtipo` DISABLE KEYS */;
-INSERT INTO `cantidadtipo` VALUES (2,1,1,2),(3,1,11,20),(4,4,13,50);
+INSERT INTO `cantidadtipo` VALUES (2,1,1,2),(3,1,11,20),(4,4,13,50),(5,2,15,50);
 /*!40000 ALTER TABLE `cantidadtipo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -88,7 +88,7 @@ CREATE TABLE `solicitudes` (
   KEY `idCentro` (`idCentro`),
   CONSTRAINT `solicitudes_ibfk_1` FOREIGN KEY (`idUsuario`) REFERENCES `usuarios` (`idUsuario`),
   CONSTRAINT `solicitudes_ibfk_2` FOREIGN KEY (`idCentro`) REFERENCES `centrosrecoleccion` (`idCentro`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -97,7 +97,7 @@ CREATE TABLE `solicitudes` (
 
 LOCK TABLES `solicitudes` WRITE;
 /*!40000 ALTER TABLE `solicitudes` DISABLE KEYS */;
-INSERT INTO `solicitudes` VALUES (1,1,1,'Ingresada'),(3,5,4,'Ingresada'),(5,7,6,'Ingresada'),(7,9,8,'Ingresada'),(9,1,1,'Ingresada'),(11,1,4,'Ingresada'),(12,1,4,'Ingresada'),(13,1,4,'Ingresada');
+INSERT INTO `solicitudes` VALUES (1,1,1,'Ingresada'),(3,5,4,'Ingresada'),(5,7,6,'Ingresada'),(7,9,8,'Ingresada'),(9,1,1,'Ingresada'),(11,1,4,'Ingresada'),(12,1,4,'Ingresada'),(13,1,4,'Ingresada'),(14,7,4,'Ingresada'),(15,9,4,'Ingresada');
 /*!40000 ALTER TABLE `solicitudes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -138,7 +138,9 @@ CREATE TABLE `usuarios` (
   `direccion` varchar(150) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `telefono` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`idUsuario`)
+  `rol` varchar(10) NOT NULL,
+  PRIMARY KEY (`idUsuario`),
+  UNIQUE KEY `nombre_UNIQUE` (`nombre`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -148,7 +150,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'Juan Perez','Calle Falsa 123','juan.perez@gmail.com','1234567890'),(5,'Ana Lopez','Av. Libertador 123','ana@mail.com','0987654321'),(7,'Ana Lopez','Av. Libertador 123','ana@mail.com','0987654321'),(9,'Ana Lopez','Av. Libertador 123','ana@mail.com','0987654321');
+INSERT INTO `usuarios` VALUES (1,'Juan Perez','Calle Falsa 123','juan.perez@gmail.com','1234567890','ADMIN'),(5,'Ana Lopez','Av. Libertador 123','ana@mail.com','0987654321','ADMIN'),(7,'Juan Pedro','Av. Libertador 123','ana@mail.com','0987654321','USER'),(9,'María','Av. Libertador 123','ana@mail.com','0987654321','USER');
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -169,4 +171,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-26 12:40:10
+-- Dump completed on 2024-10-26 16:57:29
