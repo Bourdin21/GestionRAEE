@@ -1,6 +1,5 @@
 package client;
 
-import dao.TipoRAEEDAO;
 import model.*;
 import service.*;
 
@@ -17,26 +16,60 @@ public class MenuPrincipal {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
+        System.out.println("Bienvenido al Sistema de Gestión de RAEE.");
+
+        System.out.print("Ingrese su nombre de usuario: ");
+        String nombreUsuario = scanner.nextLine(); // Lee la línea completa
+
+        Usuario usuarioActual = usuarioService.obtenerUsuarioPorNombre(nombreUsuario); // Método que busca usuario por nombre
+
+        if (usuarioActual == null) {
+            System.out.println("Usuario no encontrado. Verifique el nombre.");
+            return;
+        }
+
+        System.out.println("Bienvenido, " + usuarioActual.getNombre() + " (Rol: " + usuarioActual.getRol() + ")");
+
         boolean ejecutar = true;
 
         while (ejecutar) {
             System.out.println("\n----- Menú Principal -----");
-            System.out.println("1. Gestionar Usuarios");
-            System.out.println("2. Gestionar Centros de Recolección");
-            System.out.println("3. Gestionar Solicitudes");
+
+            // Mostrar opciones según el rol del usuario
+            if (usuarioActual.getRol() == Usuario.Rol.ADMIN) {
+                System.out.println("1. Gestionar Usuarios");
+                System.out.println("2. Gestionar Centros de Recolección");
+                System.out.println("3. Gestionar Solicitudes");
+            } else if (usuarioActual.getRol() == Usuario.Rol.USER) {
+                System.out.println("1. Crear Solicitud");
+                System.out.println("2. Consultar Estado de Solicitud");
+            }
             System.out.println("4. Salir");
+
             System.out.print("Seleccione una opción: ");
             int opcion = scanner.nextInt();
 
             switch (opcion) {
                 case 1:
-                    gestionarUsuarios();
+                    if (usuarioActual.getRol() == Usuario.Rol.ADMIN) {
+                        gestionarUsuarios(usuarioActual);
+                    } else if (usuarioActual.getRol() == Usuario.Rol.USER) {
+                        crearSolicitudUsuario(usuarioActual); // Método para que el usuario cree su propia solicitud
+                    }
                     break;
                 case 2:
-                    gestionarCentros();
+                    if (usuarioActual.getRol() == Usuario.Rol.ADMIN) {
+                        gestionarCentros(usuarioActual);
+                    } else if (usuarioActual.getRol() == Usuario.Rol.USER) {
+                        consultarEstadoSolicitudUsuario(usuarioActual); // Método para que el usuario consulte su solicitud
+                    }
                     break;
                 case 3:
-                    gestionarSolicitudes();
+                    if (usuarioActual.getRol() == Usuario.Rol.ADMIN) {
+                        gestionarSolicitudes(usuarioActual);
+                    } else {
+                        System.out.println("Opción no válida.");
+                    }
                     break;
                 case 4:
                     ejecutar = false;
@@ -49,7 +82,7 @@ public class MenuPrincipal {
     }
 
     // Caso de uso: Gestionar Usuarios
-    private static void gestionarUsuarios() {
+    private static void gestionarUsuarios(Usuario usuarioActual) {
         System.out.println("\n-------------------- Gestión de Usuarios --------------------");
 
         // Mostrar lista de usuarios existentes
@@ -89,7 +122,7 @@ public class MenuPrincipal {
         System.out.println("\n--- Lista de Usuarios Existentes ---");
         consultarUsuarios(); // Llama al metodo que lista todos los usuarios
         System.out.println("------------------------------------");
-
+        System.out.println("\n--- Crear Nuevo Usuario ---");
         System.out.print("Nombre: ");
         String nombre = scanner.next();
         System.out.print("Dirección: ");
@@ -98,10 +131,13 @@ public class MenuPrincipal {
         String email = scanner.next();
         System.out.print("Teléfono: ");
         String telefono = scanner.next();
-
-        Usuario usuario = new Usuario(nombre, direccion, email, telefono);
+        System.out.print("Ingrese el Rol del Usuario (ADMIN/USER): ");
+        String rolInput = scanner.next().toUpperCase();
+        Usuario.Rol rol = Usuario.Rol.valueOf(rolInput);
+        Usuario usuario = new Usuario(nombre, direccion, email, telefono, rol);
         usuarioService.crearUsuario(usuario);
-        System.out.println("Usuario creado exitosamente.");
+        System.out.println("Usuario creado exitosamente con rol: " + rol);
+
     }
 
     private static void consultarUsuarios() {
@@ -137,7 +173,11 @@ public class MenuPrincipal {
     }
 
     // Caso de uso: Gestionar Centros de Recolección
-    private static void gestionarCentros() {
+    private static void gestionarCentros(Usuario usuarioActual) {
+        if (usuarioActual.getRol() != Usuario.Rol.ADMIN) {
+            System.out.println("Acceso denegado. Solo los administradores pueden gestionar centros de recolección.");
+            return;
+        }
         System.out.println("\n-------------------- Gestión de Centros de Recolección --------------------");
 
         // Mostrar lista de centros de recolección existentes
@@ -191,7 +231,7 @@ public class MenuPrincipal {
     private static void consultarCentros() {
         List<CentroRecoleccion> centros = centroRecoleccionService.obtenerTodosLosCentros();
         System.out.println("Lista de Centros de Recolección:");
-        centros.forEach(centro -> System.out.println("ID: " + centro.getIdCentro() + ", Nombre: " + centro.getNombre()));
+        centros.forEach(centro -> System.out.println("ID: " + centro.getIdCentro() + ", Nombre: " + centro.getNombre() + ", Dirección: " + centro.getDireccion()));
     }
 
     private static void actualizarCentro() {
@@ -216,42 +256,46 @@ public class MenuPrincipal {
     }
 
     // Caso de uso: Gestionar Solicitudes
-    private static void gestionarSolicitudes() {
-        System.out.println("\n-------------------- Gestión de Solicitudes --------------------");
+    private static void gestionarSolicitudes(Usuario usuarioActual) {
+        // Verifica que el usuario actual tenga el rol de ADMIN
+        if (usuarioActual.getRol() != Usuario.Rol.ADMIN) {
+            System.out.println("Acceso denegado. Solo los administradores pueden gestionar solicitudes.");
+            return;
+        }
 
-        // Mostrar lista de solicitudes existentes
-        System.out.println("\n--- Lista de Solicitudes Existentes ---");
-        consultarSolicitudes(); // Llama al metodo que lista todas las solicitudes
-        System.out.println("------------------------------------");
+        boolean gestionar = true;
+        while (gestionar) {
+            System.out.println("\n--- Gestión de Solicitudes ---");
+            System.out.println("1. Crear Solicitud");
+            System.out.println("2. Consultar Solicitudes");
+            System.out.println("3. Actualizar Estado de Solicitud");
+            System.out.println("4. Eliminar Solicitud");
+            System.out.println("5. Volver al Menú Principal");
+            System.out.print("Seleccione una opción: ");
+            int opcion = scanner.nextInt();
 
-        System.out.println("1. Crear Solicitud");
-        System.out.println("2. Consultar Solicitudes");
-        System.out.println("3. Actualizar Estado de Solicitud");
-        System.out.println("4. Eliminar Solicitud");
-        System.out.println("5. Configurar Tipos de RAEE en Solicitud");
-        System.out.print("Seleccione una opción: ");
-        int opcion = scanner.nextInt();
-
-        switch (opcion) {
-            case 1:
-                crearSolicitud();
-                break;
-            case 2:
-                consultarSolicitudes();
-                break;
-            case 3:
-                actualizarEstadoSolicitud();
-                break;
-            case 4:
-                eliminarSolicitud();
-                break;
-            case 5:
-                configurarTiposRAEESolicitud();
-                break;
-            default:
-                System.out.println("Opción no válida.");
+            switch (opcion) {
+                case 1:
+                    crearSolicitud(); // Método para que el administrador cree una solicitud
+                    break;
+                case 2:
+                    consultarSolicitudes(); // Método para que el administrador consulte todas las solicitudes
+                    break;
+                case 3:
+                    actualizarEstadoSolicitud(); // Método para que el administrador actualice el estado de una solicitud
+                    break;
+                case 4:
+                    eliminarSolicitud(); // Método para que el administrador elimine una solicitud
+                    break;
+                case 5:
+                    gestionar = false;
+                    break;
+                default:
+                    System.out.println("Opción no válida. Intente nuevamente.");
+            }
         }
     }
+
 
     private static void crearSolicitud() {
         // Mostrar lista de usuarios existentes
@@ -302,6 +346,65 @@ public class MenuPrincipal {
             System.out.println("Configuración de la solicitud completada.");
         } else {
             System.out.println("Usuario o Centro de Recolección no encontrado. No se pudo crear la solicitud.");
+        }
+    }
+
+    private static void crearSolicitudUsuario(Usuario usuario) {
+        // Mostrar lista de centros de recolección disponibles
+        System.out.println("\n--- Centros de Recolección Disponibles ---");
+        consultarCentros(); // Método que lista todos los centros de recolección
+        System.out.println("------------------------------------");
+
+        // Solicitar ID del centro de recolección
+        System.out.print("Ingrese el ID del Centro de Recolección para su Solicitud: ");
+        int idCentro = scanner.nextInt();
+        CentroRecoleccion centro = centroRecoleccionService.obtenerCentroPorId(idCentro);
+
+        if (centro != null) {
+            // Crear la solicitud en estado "Ingresada"
+            Solicitud nuevaSolicitud = new Solicitud(usuario, centro, "Ingresada");
+            solicitudService.crearSolicitud(nuevaSolicitud);
+            System.out.println("Solicitud creada exitosamente con estado 'Ingresada'.");
+
+            // Permitir agregar tipos de RAEE a la solicitud
+            boolean agregarMasTipos = true;
+            while (agregarMasTipos) {
+                System.out.println("\n--- Configurar Tipos de RAEE para esta Solicitud ---");
+                System.out.println("1. Agregar Tipo de RAEE");
+                System.out.println("2. Finalizar Configuración de la Solicitud");
+                System.out.print("Seleccione una opción: ");
+                int opcion = scanner.nextInt();
+
+                switch (opcion) {
+                    case 1:
+                        agregarTipoRAEESolicitud(nuevaSolicitud);
+                        break;
+                    case 2:
+                        agregarMasTipos = false;
+                        System.out.println("Configuración de la solicitud completada.");
+                        break;
+                    default:
+                        System.out.println("Opción no válida.");
+                }
+            }
+        } else {
+            System.out.println("Centro de Recolección no encontrado. No se pudo crear la solicitud.");
+        }
+    }
+
+    private static void consultarEstadoSolicitudUsuario(Usuario usuario) {
+        List<Solicitud> solicitudes = solicitudService.obtenerSolicitudesPorUsuario(usuario.getIdUsuario());
+
+        if (solicitudes.isEmpty()) {
+            System.out.println("No tiene solicitudes en el sistema.");
+        } else {
+            System.out.println("\n--- Estado de sus Solicitudes ---");
+            for (Solicitud solicitud : solicitudes) {
+                System.out.println("ID Solicitud: " + solicitud.getIdSolicitud() +
+                        ", Centro de Recolección: " + solicitud.getCentroRecoleccion().getNombre() +
+                        ", Estado: " + solicitud.getEstado());
+            }
+            System.out.println("------------------------------------");
         }
     }
 

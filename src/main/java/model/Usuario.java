@@ -5,24 +5,29 @@ import javax.persistence.*;
 @Table(name = "Usuarios")
 public class Usuario {
 
+    public enum Rol {
+        ADMIN, USER
+    }
+
     // Constructor
     public Usuario() {
     }
 
-    public Usuario(int idUsuario, String nombre, String direccion, String email, String telefono) {
+    public Usuario(int idUsuario, String nombre, String direccion, String email, String telefono, Rol rol) {
         this.idUsuario = idUsuario;
         this.nombre = nombre;
         this.direccion = direccion;
         this.email = email;
         this.telefono = telefono;
+        this.rol = rol;
     }
 
-    public Usuario(String nombre, String direccion, String email, String telefono) {
-        this.idUsuario = idUsuario;
+    public Usuario(String nombre, String direccion, String email, String telefono, Rol rol) {
         this.nombre = nombre;
         this.direccion = direccion;
         this.email = email;
         this.telefono = telefono;
+        this.rol = rol;
     }
 
     @Id
@@ -41,6 +46,10 @@ public class Usuario {
 
     @Column(name = "telefono")
     private String telefono;
+
+    @Column(name = "rol")
+    @Enumerated(EnumType.STRING)
+    private Rol rol; // Campo para definir el rol del usuario
 
     // Getters y Setters
     public int getIdUsuario() {
@@ -81,5 +90,12 @@ public class Usuario {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+    public Rol getRol() {
+        return rol;
+    }
+
+    public void setRol(Rol rol) {
+        this.rol = rol;
     }
 }

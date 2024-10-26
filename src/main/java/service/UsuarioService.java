@@ -32,4 +32,9 @@ public class UsuarioService {
     public void eliminarUsuario(int id) {
         usuarioDAO.eliminarUsuario(id);
     }
+
+    // Método para obtener usuario por nombre
+    public Usuario obtenerUsuarioPorNombre(String nombreUsuario) {
+        return usuarioDAO.obtenerUsuarioPorNombre(nombreUsuario);
+    }
 }

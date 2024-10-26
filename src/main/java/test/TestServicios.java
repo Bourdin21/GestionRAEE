@@ -19,10 +19,14 @@ public class TestServicios {
         SolicitudService solicitudService = new SolicitudService();
         TipoRAEEService tipoRAEEService = new TipoRAEEService();
 
-        // Prueba de UsuarioService
-        Usuario nuevoUsuario = new Usuario("Ana Lopez", "Av. Libertador 123", "ana@mail.com", "0987654321");
+        // Crear un nuevo usuario admin y guardarlo
+        Usuario nuevoUsuario = new Usuario("Ana Lopez", "Av. Libertador 123", "ana@mail.com", "0987654321", Usuario.Rol.ADMIN);
         usuarioService.crearUsuario(nuevoUsuario);
         System.out.println("Usuario creado: " + nuevoUsuario);
+
+        // Crear un nuevo usuario user y guardarlo
+        nuevoUsuario = new Usuario("Ana Lopez", "Av. Libertador 123", "ana@mail.com", "0987654321",Usuario.Rol.USER);
+        usuarioService.crearUsuario(nuevoUsuario);
 
         List<Usuario> usuarios = usuarioService.obtenerTodosLosUsuarios();
         System.out.println("Lista de usuarios:");
@@ -71,10 +75,6 @@ public class TestServicios {
 
         tipoRAEEService.eliminarTipoRAEE(tipoRecuperado.getIdTipo());
         System.out.println("Tipo de RAEE eliminado.");
-
-        // Crear un nuevo usuario y guardarlo
-        nuevoUsuario = new Usuario("Ana Lopez", "Av. Libertador 123", "ana@mail.com", "0987654321");
-        usuarioService.crearUsuario(nuevoUsuario);
 
         // Recuperar el usuario recién creado para obtener su ID generado
         usuarioRecuperado = usuarioService.obtenerUsuarioPorId(nuevoUsuario.getIdUsuario());

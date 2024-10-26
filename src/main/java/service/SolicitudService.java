@@ -18,6 +18,11 @@ public class SolicitudService {
         return solicitudDAO.obtenerSolicitudPorId(id);
     }
 
+    // Método para obtener solicitudes por ID de usuario
+    public List<Solicitud> obtenerSolicitudesPorUsuario(int idUsuario) {
+        return solicitudDAO.obtenerSolicitudesPorUsuario(idUsuario);
+    }
+
     // Obtener todas las solicitudes
     public List<Solicitud> obtenerTodasLasSolicitudes() {
         return solicitudDAO.obtenerSolicitudes();

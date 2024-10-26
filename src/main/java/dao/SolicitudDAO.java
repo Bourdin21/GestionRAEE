@@ -1,6 +1,7 @@
 package dao;
 
 import model.Solicitud;
+import org.hibernate.query.Query;
 import util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -33,6 +34,19 @@ public class SolicitudDAO {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.get(Solicitud.class, id);
         }
+    }
+
+    // Método para obtener solicitudes por ID de usuario
+    public List<Solicitud> obtenerSolicitudesPorUsuario(int idUsuario) {
+        List<Solicitud> solicitudes = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<Solicitud> query = session.createQuery("from Solicitud where usuario.idUsuario = :idUsuario", Solicitud.class);
+            query.setParameter("idUsuario", idUsuario);
+            solicitudes = query.list();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return solicitudes;
     }
 
     // Actualizar una solicitud existente

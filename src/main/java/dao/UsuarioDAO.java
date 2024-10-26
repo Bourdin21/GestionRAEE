@@ -1,6 +1,7 @@
 package dao;
 
 import model.Usuario;
+import org.hibernate.query.Query;
 import util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -61,6 +62,19 @@ public class UsuarioDAO {
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
+        }
+    }
+
+    // Método para buscar usuario por nombre
+    public Usuario obtenerUsuarioPorNombre(String nombreUsuario) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<Usuario> query = session.createQuery("from Usuario where lower(nombre) = :nombre", Usuario.class);
+            query.setParameter("nombre", nombreUsuario.toLowerCase());
+            return (Usuario)query.uniqueResult(); // Devuelve el usuario encontrado o null si no hay coincidencias
+        } catch (Exception e) {
+            System.err.println("Error al obtener el usuario con nombre " + nombreUsuario);
+            e.printStackTrace();
+            return null; // Retorna null en caso de excepción
         }
     }
 }

@@ -9,7 +9,7 @@ public class TestUsuarioDAO {
         UsuarioDAO usuarioDAO = new UsuarioDAO();
 
         // Crear y guardar un nuevo usuario
-        Usuario nuevoUsuario = new Usuario("Juan Perez", "Calle Falsa 123", "juan.perez@gmail.com", "1234567890");
+        Usuario nuevoUsuario = new Usuario("Juan Perez", "Calle Falsa 123", "juan.perez@gmail.com", "1234567890", Usuario.Rol.USER);
         usuarioDAO.guardarUsuario(nuevoUsuario);
         System.out.println("Usuario creado: " + nuevoUsuario);
 
