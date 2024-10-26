@@ -446,7 +446,6 @@ public class MenuPrincipal {
             for (TipoRAEE tipoRAEE : tiposRAEE) {
                 System.out.println("ID Tipo RAEE: " + tipoRAEE.getIdTipo() +
                         ", Descripción: " + tipoRAEE.getDescripcion());
-                System.out.println("----------------------------------------------------");
             }
         }
     }
